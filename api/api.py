@@ -1,3 +1,4 @@
+import uuid
 from flask import Flask
 from flask import request, make_response
 from flask_cors import CORS
@@ -25,11 +26,13 @@ def generate():
         with autocast(device): 
             image = pipe(prompt, guidance_scale=8.5).images[0]
 
-        image.save("testimage.png")
+        ## random image name
+        imageName = uuid.uuid4().hex
+        image.save(imageName + ".png")
         buffer = BytesIO()
         image.save(buffer, format="PNG")
         imgstr = base64.b64encode(buffer.getvalue())
-        return make_response({"image": prompt})
+        return make_response({"image": imgstr.decode("utf-8")})
     except Exception as e:
         return make_response({"error": str(e)}), 400
 
